@@ -11,7 +11,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
-import android.net.http.AndroidHttpClient;
+
+import com.epicodus.myrestaurants.ui.MainActivity;
+import com.epicodus.myrestaurants.ui.RestaurantActivity;
 
 import static junit.framework.Assert.assertTrue;
 
