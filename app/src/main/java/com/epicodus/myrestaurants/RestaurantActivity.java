@@ -12,59 +12,68 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class RestaurantActivity extends AppCompatActivity {
+    public ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     public static final String TAG = RestaurantActivity.class.getSimpleName();
-    private ListView mListView;
+    @Bind(R.id.listView) ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
-
-        mListView = (ListView) findViewById(R.id.listView);
-//        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, restaurants);
-//        mListView.setAdapter(adapter);
-//
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                String restaurant = ((TextView)view).getText().toString();
-//                Toast.makeText(RestaurantActivity.this, restaurant, Toast.LENGTH_LONG).show();
-//            }
-//        });
+        ButterKnife.bind(this);
 
 
         Intent intent = getIntent();
         String location = intent.getStringExtra("location");
-        getRestaurants(location);
 
+        getRestaurants(location);
     }
 
     private void getRestaurants(String location) {
-        Log.v("Hit getRestaurants", location);
-        YelpService.findRestaurants(location, new Callback() {
+        final YelpService yelpService = new YelpService();
+
+        yelpService.findRestaurants(location, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    String jsonData = response.body().string();
-                    Log.v("ERROR", jsonData);
-                    if (response.isSuccessful()) {
-                        Log.v("JSON DATA", jsonData);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void onResponse(Call call, Response response) {
+                mRestaurants = yelpService.processResults(response);
 
+                RestaurantActivity.this.runOnUiThread(new Runnable(){
+                    @Override
+                    public void run(){
+                        String[] restaurantNames = new String[mRestaurants.size()];
+                        for(int i = 0; i < restaurantNames.length; i++){
+                            restaurantNames[i] = mRestaurants.get(i).getName();
+                        }
+                        ArrayAdapter adapter = new ArrayAdapter(RestaurantActivity.this, android.R.layout.simple_list_item_1, restaurantNames);
+                        mListView.setAdapter(adapter);
+
+                        for(Restaurant restaurant : mRestaurants){
+                            Log.d(TAG, "Name: " + restaurant.getName());
+                            Log.d(TAG, "Phone: " + restaurant.getPhone());
+                            Log.d(TAG, "Website: " + restaurant.getWebsite());
+                            Log.d(TAG, "Image url: " + restaurant.getImageUrl());
+                            Log.d(TAG, "Rating: " + Double.toString(restaurant.getRating()));
+                            Log.d(TAG, "Address: " + android.text.TextUtils.join(", ", restaurant.getAddress()));
+                            Log.d(TAG, "Categories: " + restaurant.getCategories().toString());
+                        }
+
+
+                    }
+                });
             }
         });
     }
