@@ -22,7 +22,7 @@
         android:id="@+id/myRestaurantsTextView"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:textColor="@color/colorIcons"
+        android:textColor="@color/colorTextIcons"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="37dp" />
@@ -35,7 +35,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/colorAccent"
-        android:textColor="@color/colorIcons" />
+        android:textColor="@color/colorTextIcons" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
         android:inputType="phone"
         android:ems="10"
         android:id="@+id/locationEditText"
-        android:background="@color/colorIcons"
+        android:background="@color/colorTextIcons"
         android:layout_above="@+id/findRestaurantsButton"
         android:layout_marginBottom="10dp"
         android:padding="5dp"

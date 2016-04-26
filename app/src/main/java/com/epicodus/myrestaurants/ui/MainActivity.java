@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.findRestaurantsButton:
                 String location = mLocationEditText.getText().toString();
-                Intent intent = new Intent(MainActivity.this, RestaurantActivity.class);
+                Intent intent = new Intent(MainActivity.this, RestaurantListActivity.class);
                 intent.putExtra("location", location);
                 startActivity(intent);
                 break;
