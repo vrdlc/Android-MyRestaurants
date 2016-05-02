@@ -13,12 +13,18 @@ import android.widget.Toast;
 
 import com.epicodus.myrestaurants.Constants;
 import com.epicodus.myrestaurants.R;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Firebase mSearchedLocationRef;
+    private ValueEventListener mSearchedLocationRefListener;
 
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
@@ -26,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String TAG = MainActivity.class.getSimpleName();
     @Bind(R.id.findRestaurantsButton) Button mFindRestaurantsButton;
     @Bind(R.id.locationEditText) EditText mLocationEditText;
+    @Bind(R.id.savedRestaurantsButton) Button mSavedRestaurantsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +40,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mSharedPreferences.edit();
+        mSearchedLocationRef = new Firebase(Constants.FIREBASE_URL_SEARCHED_LOCATION);
+
+        mSearchedLocationRefListener = mSearchedLocationRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String locations = dataSnapshot.getValue().toString();
+                Log.d("Location updated", locations);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+
+            }
+        });
+
+//        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        mEditor = mSharedPreferences.edit();
 
         mFindRestaurantsButton.setOnClickListener(this);
+        mSavedRestaurantsButton.setOnClickListener(this);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSearchedLocationRef.removeEventListener(mSearchedLocationRefListener);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.savedRestaurantsButton:
+                Intent saveIntent = new Intent(MainActivity.this, SavedRestaurantListActivity.class);
+                startActivity(saveIntent);
+                break;
             case R.id.findRestaurantsButton:
                 String location = mLocationEditText.getText().toString();
                 saveLocationToFirebase(location);
@@ -49,9 +85,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    addToSharedPreferences(location);
 //                }
                 Toast.makeText(MainActivity.this, "Hi there!", Toast.LENGTH_SHORT).show();
-             Intent intent = new Intent(MainActivity.this, RestaurantListActivity.class);
-//                intent.putExtra("location", location); THIS LINE NO LONGER NEEDED BECAUSE THIS IS SAVED TO SHARED PREFERENCES
-                startActivity(intent);
+             Intent findIntent = new Intent(MainActivity.this, RestaurantListActivity.class);
+                findIntent.putExtra("location", location);
+                startActivity(findIntent);
                 break;
             default:
                 break;
