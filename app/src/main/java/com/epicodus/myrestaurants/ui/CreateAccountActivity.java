@@ -1,5 +1,6 @@
 package com.epicodus.myrestaurants.ui;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,7 +41,9 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View view) {
         if (view == mCreateUserButton) {
+            Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
             createNewUser();
+            startActivity(intent);
         }
     }
 
