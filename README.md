@@ -2,7 +2,7 @@
 
 #### An Android app that returns restaurants for a user-given location
 
-#### By Tyler Suderman
+#### By Ramon de la Cruz
 
 ## description
 
