@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = LoginActivity.class.getSimpleName();
+
     @Bind(R.id.passwordLoginButton) Button mPasswordLoginButton;
     @Bind(R.id.emailEditText) EditText mEmailEditText;
     @Bind(R.id.passwordEditText) EditText mPasswordEditText;
@@ -33,16 +34,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private SharedPreferences.Editor mSharedPreferencesEditor;
     private ProgressDialog mAuthProgressDialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        mRegisterTextView.setOnClickListener(this);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         mSharedPreferencesEditor = mSharedPreferences.edit();
         mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
         mPasswordLoginButton.setOnClickListener(this);
+        mRegisterTextView.setOnClickListener(this);
+        String signupEmail = mSharedPreferences.getString(Constants.KEY_USER_EMAIL, null);
+
+        if (signupEmail != null) {
+            mEmailEditText.setText(signupEmail);
+        }
 
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading...");
@@ -52,23 +59,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
-            case R.id.passwordLoginButton:
-                loginWithPassword();
-                break;
-            case R.id.registerTextView:
-                Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
-                startActivity(intent);
-                finish();
-                break;
-            default:
-                break;
-
+        if (view == mPasswordLoginButton) {
+            loginWithPassword();
+        }
+        if (view == mRegisterTextView) {
+            Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+            startActivity(intent);
+            finish();
         }
     }
 
     public void loginWithPassword() {
-        String email = mEmailEditText.getText().toString();
+        final String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
         if (email.equals("")) {
@@ -80,21 +82,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mAuthProgressDialog.show();
 
-
         mFirebaseRef.authWithPassword(email, password, new Firebase.AuthResultHandler() {
 
             @Override
             public void onAuthenticated(AuthData authData) {
-                mAuthProgressDialog.dismiss();
                 if (authData != null) {
+                    mAuthProgressDialog.dismiss();
                     String userUid = authData.getUid();
+                    mSharedPreferencesEditor.putString(Constants.KEY_USER_EMAIL, email).apply();
                     mSharedPreferencesEditor.putString(Constants.KEY_UID, userUid).apply();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
-                    String userInfo = authData.toString();
-                    Log.d("Currently Logged In: ", userInfo);
                 }
             }
 
@@ -115,15 +115,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     default:
                         showErrorToast(firebaseError.toString());
                 }
-            }
-
-            public void registerNewUser() {
-                mAuthProgressDialog.show();
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                mAuthProgressDialog.hide();
             }
         });
     }
