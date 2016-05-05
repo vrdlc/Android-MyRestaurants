@@ -1,13 +1,12 @@
 package com.epicodus.myrestaurants.models;
 
+import com.epicodus.myrestaurants.Constants;
+import com.firebase.client.AuthData;
+
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Guest on 4/25/16.
- */
 
 @Parcel
 public class Restaurant {
@@ -20,6 +19,7 @@ public class Restaurant {
     public double latitude;
     public double longitude;
     public List<String> categories = new ArrayList<>();
+    private String pushId;
 
     public Restaurant() {
 
@@ -79,4 +79,13 @@ public class Restaurant {
         String largeImageUrl = imageUrl.substring(0, imageUrl.length() - 6).concat("o.jpg");
         return largeImageUrl;
     }
+
+    public String getPushId() {
+        return pushId;
+    }
+
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
 }
