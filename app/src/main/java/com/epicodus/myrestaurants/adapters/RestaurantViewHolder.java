@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.epicodus.myrestaurants.R;
 import com.epicodus.myrestaurants.models.Restaurant;
 import com.epicodus.myrestaurants.ui.RestaurantDetailActivity;
+import com.epicodus.myrestaurants.util.ItemTouchHelperViewHolder;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -22,7 +23,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Ramon on 5/2/16.
  */
-public class RestaurantViewHolder extends RecyclerView.ViewHolder {
+public class RestaurantViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
     private static final int MAX_WIDTH = 200;
     private static final int MAX_HEIGHT = 200;
 
@@ -50,6 +51,16 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
                 mContext.startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onItemSelected() {
+
+    }
+
+    @Override
+    public void onItemClear() {
+
     }
 
     public void bindRestaurant(Restaurant restaurant) {
