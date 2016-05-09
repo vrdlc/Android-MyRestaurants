@@ -55,12 +55,20 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder implements Ite
 
     @Override
     public void onItemSelected() {
+        itemView.animate()
+                .alpha(0.7f)
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(500);
 
     }
 
     @Override
     public void onItemClear() {
-
+        itemView.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f);
     }
 
     public void bindRestaurant(Restaurant restaurant) {
